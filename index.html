@@ -21,13 +21,15 @@
     <p id="emptyMessage">No posts yet. Check back soon.</p>
   </main>
 
+  <script src="posts.js"></script>
+  <script src="storage.js"></script>
   <script>
     const makePostLink = document.getElementById("makePostLink");
     const postList = document.getElementById("postList");
     const emptyMessage = document.getElementById("emptyMessage");
 
-    // Get the saved posts
-    const posts = JSON.parse(localStorage.getItem("vx_posts")) || [];
+    // Get all the posts: the starter posts from posts.js plus the ones saved in this browser
+    const posts = getAllPosts();
 
     // Find out who is logged in
     let currentUser = null;
@@ -62,7 +64,7 @@
         }
       }
 
-      localStorage.setItem("vx_posts", JSON.stringify(posts));
+      savePosts(posts);
       showPosts();
     }
 
@@ -82,7 +84,7 @@
       }
       emptyMessage.style.display = "none";
 
-      // post.html saves the newest post first, so we show them in order
+      // The newest post is first in the list, so we show them in order
       for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
 
