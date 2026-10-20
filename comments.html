@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comments | VenoX_Tech</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <header>
+    <a href="index.html">VenoX_Tech</a>
+    <a href="index.html">Back to home</a>
+   </header> 
+
+   <main>
+    <p id="notFound"hidden>This post could not be found. <a href="index.html">Go back home</a></p>
+    
+    <article id="postArea">
+        <img id="postImage" alt="">
+        <h1 id="postTitle"></h1>
+        <p id="postName"></p>
+        <p id="postText"></p>
+
+        <div class="actions">
+            <button id="likeButton">Like</button>
+            <button id="shareButton">Share</button>
+        </div>
+
+        <p class="notice" id="loginMessage" hidden>
+            Only logged-in bloggers can like and comment.
+            <a href="login.html">Log in</a> or <a href="signup.html">Create an account</a> 
+        </p>
+    </article>
+
+    <section id="commentSection">
+        <h2>Comments (<span id="commentCount">0</span>)</h2>
+
+        <form id="commentForm">
+            <label for="commentInput">Your comment</label>
+            <textarea id="commentInput"></textarea>
+            <p class="error" id="commentError"></p>
+            <button type="submit" id="commentButton">Post comment</button>
+        </form>
+        
+        <div id="commentList"></div>
+    </section>
+   </main>
+
+   
+<script>
+    const postImage = document.getElementById("postImage");
+    const postTitle = document.getElementById("postTitle");
+    const postName = document.getElementById("postName");
+    const postText = document.getElementById("postText");
+    const postArea = document.getElementById("postArea");
+    const notFound = document.getElementById("notFound");
+
+    const commentForm = document.getElementById("commentForm");
+    const commentInput = document.getElementById("commentInput");
+    const commentList = document.getElementById("commentList");
+    const commentCount = document.getElementById("commentCount");
+    const commentError = document.getElementById("commentError");
+
+    const likeButton = document.getElementById("likeButton");
+    const shareButton = document.getElementById("shareButton");
+    const loginMessage = document.getElementById("loginMessage");
+
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get("id");
+
+    let posts = JSON.parse(localStorage.getItem("vx_posts")) || [];
+    let post = posts.find(function (item) {
+        return item.id === postId;
+    });
+
+    const currentEmail =
+        JSON.parse(localStorage.getItem("vx_session")) || "";
+
+    if (!post) {
+        postArea.hidden = true;
+        document.getElementById("commentSection").hidden = true;
+        notFound.hidden = false;
+    } else {
+        postImage.src = post.img;
+        postImage.alt = post.title;
+        postTitle.textContent = post.title;
+        postName.textContent = post.name + " - " + post.date;
+        postText.textContent = post.text;
+
+        post.likes = post.likes || [];
+        post.comments = post.comments || [];
+
+        function updateComments() {
+            commentList.innerHTML = "";
+            commentCount.textContent = post.comments.length;
+
+            for (let i = 0; i < post.comments.length; i++) {
+                const comment = document.createElement("p");
+                comment.textContent =
+                    post.comments[i].name + ": " +
+                    post.comments[i].text;
+                commentList.appendChild(comment);
+            }
+        }
+
+        function savePosts() {
+            localStorage.setItem("vx_posts", JSON.stringify(posts));
+        }
+
+        commentForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            commentError.textContent = "";
+
+            const text = commentInput.value.trim();
+
+            if (!currentEmail) {
+                commentError.textContent =
+                    "Please log in before commenting.";
+                return;
+            }
+
+            if (text === "") {
+                commentError.textContent =
+                    "Please write a comment first.";
+                return;
+            }
+
+            const users =
+                JSON.parse(localStorage.getItem("vx_users")) || [];
+
+            const user = users.find(function (item) {
+                return item.email === currentEmail;
+            });
+
+            if (!user) {
+                commentError.textContent =
+                    "Please log in again before commenting.";
+                return;
+            }
+
+            post.comments.push({
+                name: user.name,
+                text: text
+            });
+
+            savePosts();
+            commentInput.value = "";
+            updateComments();
+        });
+
+        likeButton.addEventListener("click", function () {
+            if (!currentEmail) {
+                alert("Please log in before liking this post.");
+                return;
+            }
+
+            if (post.likes.includes(currentEmail)) {
+                post.likes = post.likes.filter(function (email) {
+                    return email !== currentEmail;
+                });
+                likeButton.textContent = "Like";
+            } else {
+                post.likes.push(currentEmail);
+                likeButton.textContent = "Unlike";
+            }
+
+            savePosts();
+        });
+
+        shareButton.addEventListener("click", function () {
+            const link = window.location.href;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link)
+                    .then(function () {
+                        alert("Post link copied!");
+                    })
+                    .catch(function () {
+                        prompt("Copy this post link:", link);
+                    });
+            } else {
+                prompt("Copy this post link:", link);
+            }
+        });
+
+        updateComments();
+
+        if (!currentEmail) {
+            loginMessage.hidden = false;
+        } else {
+            loginMessage.hidden = true;
+        }
+
+        if (post.likes.includes(currentEmail) && currentEmail) {
+            likeButton.textContent = "Unlike";
+        }
+    }
+</script>
+
+</body>
+</html>

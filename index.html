@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VenoX Tech</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html">VenoX Tech</a>
+    <a href="login.html" id="makePostLink">Make a post</a>
+  </header>
+
+  <main>
+    <h1>Tech, told by people who build it.</h1>
+    <p id="intro">Read the latest posts from our bloggers. Log in to like and comment.</p>
+
+    <div id="postList"></div>
+    <p id="emptyMessage">No posts yet. Check back soon.</p>
+  </main>
+
+  <script>
+    const makePostLink = document.getElementById("makePostLink");
+    const postList = document.getElementById("postList");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    // Get the saved posts
+    const posts = JSON.parse(localStorage.getItem("vx_posts")) || [];
+
+    // Find out who is logged in
+    let currentUser = null;
+    const currentEmail = JSON.parse(localStorage.getItem("vx_session")) || "";
+    const users = JSON.parse(localStorage.getItem("vx_users")) || [];
+
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].email === currentEmail) {
+        currentUser = users[i];
+      }
+    }
+
+    // If logged in, "Make a post" goes straight to the dashboard
+    if (currentUser !== null) {
+      makePostLink.href = "blogger-dashboard.html";
+    }
+
+    function likePost(postId) {
+      if (currentUser === null) {
+        alert("Please log in to like posts.");
+        return;
+      }
+
+      for (let i = 0; i < posts.length; i++) {
+        if (posts[i].id === postId) {
+          const position = posts[i].likes.indexOf(currentUser.email);
+          if (position === -1) {
+            posts[i].likes.push(currentUser.email);
+          } else {
+            posts[i].likes.splice(position, 1);
+          }
+        }
+      }
+
+      localStorage.setItem("vx_posts", JSON.stringify(posts));
+      showPosts();
+    }
+
+    function sharePost(postId) {
+      const folder = window.location.href.replace("index.html", "");
+      const link = folder + "comments.html?id=" + postId;
+      navigator.clipboard.writeText(link);
+      alert("Link copied!");
+    }
+
+    function showPosts() {
+      postList.innerHTML = "";
+
+      if (posts.length === 0) {
+        emptyMessage.style.display = "block";
+        return;
+      }
+      emptyMessage.style.display = "none";
+
+      // post.html saves the newest post first, so we show them in order
+      for (let i = 0; i < posts.length; i++) {
+        const post = posts[i];
+
+        const card = document.createElement("article");
+
+        const image = document.createElement("img");
+        image.src = post.img;
+        image.alt = post.title;
+
+        const body = document.createElement("div");
+        body.className = "cardBody";
+
+        const title = document.createElement("h2");
+        const titleLink = document.createElement("a");
+        titleLink.href = "comments.html?id=" + post.id;
+        titleLink.textContent = post.title;
+        title.appendChild(titleLink);
+
+        const name = document.createElement("p");
+        name.className = "authorName";
+        name.textContent = post.name;
+
+        let previewText = post.text;
+        if (previewText.length > 160) {
+          previewText = previewText.slice(0, 160) + "...";
+        }
+        const preview = document.createElement("p");
+        preview.textContent = previewText;
+
+        const readMore = document.createElement("a");
+        readMore.className = "readMore";
+        readMore.href = "comments.html?id=" + post.id;
+        readMore.textContent = "Read the full post";
+
+        body.appendChild(title);
+        body.appendChild(name);
+        body.appendChild(preview);
+        body.appendChild(readMore);
+
+        // Like, Comment, Share
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        let likeLabel = "Like";
+        if (currentUser !== null && post.likes.includes(currentUser.email)) {
+          likeLabel = "Liked";
+        }
+
+        const likeButton = document.createElement("button");
+        likeButton.textContent = likeLabel + " (" + post.likes.length + ")";
+        likeButton.onclick = function () {
+          likePost(post.id);
+        };
+
+        const commentLink = document.createElement("a");
+        commentLink.href = "comments.html?id=" + post.id;
+        commentLink.textContent = "Comment (" + post.comments.length + ")";
+
+        const shareButton = document.createElement("button");
+        shareButton.textContent = "Share";
+        shareButton.onclick = function () {
+          sharePost(post.id);
+        };
+
+        actions.appendChild(likeButton);
+        actions.appendChild(commentLink);
+        actions.appendChild(shareButton);
+
+        card.appendChild(image);
+        card.appendChild(body);
+        card.appendChild(actions);
+        postList.appendChild(card);
+      }
+    }
+
+    showPosts();
+  </script>
+
+</body>
+</html>

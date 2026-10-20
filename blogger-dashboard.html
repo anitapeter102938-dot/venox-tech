@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | VenoX Tech</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html">VenoX Tech</a>
+    <a href="index.html">Home</a>
+  </header>
+
+  <main>
+    <p class="notice" id="loginNotice" hidden>You are not logged in. <a href="login.html">Log in</a> to see your dashboard.</p>
+
+    <div id="dashboardArea" hidden>
+      <h1>Your dashboard</h1>
+      <p id="welcomeText"></p>
+
+      <div id="stats">
+        <div><strong id="statPosts">0</strong><span>Posts</span></div>
+        <div><strong id="statLikes">0</strong><span>Likes</span></div>
+        <div><strong id="statComments">0</strong><span>Comments</span></div>
+      </div>
+
+      <div class="buttonRow">
+      <a href="post.html">Make a post</a>
+      <a href="export.html">Export posts</a>
+      <button id="logoutButton">Log out</button>
+    </div>
+
+      <div id="postList"></div>
+      <p id="emptyMessage" hidden>You have no posts yet. Press "Make a post" to write your first one.</p>
+    </div>
+  </main>
+
+  <script>
+    const loginNotice = document.getElementById("loginNotice");
+    const dashboardArea = document.getElementById("dashboardArea");
+    const welcomeText = document.getElementById("welcomeText");
+    const statPosts = document.getElementById("statPosts");
+    const statLikes = document.getElementById("statLikes");
+    const statComments = document.getElementById("statComments");
+    const logoutButton = document.getElementById("logoutButton");
+    const postList = document.getElementById("postList");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    // Find out who is logged in
+    let currentUser = null;
+    const currentEmail = JSON.parse(localStorage.getItem("vx_session")) || "";
+    const users = JSON.parse(localStorage.getItem("vx_users")) || [];
+
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].email === currentEmail) {
+        currentUser = users[i];
+      }
+    }
+
+    // All posts from all bloggers
+    let allPosts = JSON.parse(localStorage.getItem("vx_posts")) || [];
+
+    // Log out and go home
+    logoutButton.addEventListener("click", function () {
+      localStorage.removeItem("vx_session");
+      window.location.href = "index.html";
+    });
+
+    function deletePost(postId) {
+      const sure = confirm("Delete this post? You cannot undo this.");
+      if (sure === false) {
+        return;
+      }
+
+      // Keep every post except the one we are deleting
+      const remainingPosts = [];
+      for (let i = 0; i < allPosts.length; i++) {
+        if (allPosts[i].id !== postId) {
+          remainingPosts.push(allPosts[i]);
+        }
+      }
+
+      allPosts = remainingPosts;
+      localStorage.setItem("vx_posts", JSON.stringify(allPosts));
+      showDashboard();
+    }
+
+    function sharePost(postId) {
+      const folder = window.location.href.replace("blogger-dashboard.html", "");
+      const link = folder + "comments.html?id=" + postId;
+      navigator.clipboard.writeText(link);
+      alert("Link copied!");
+    }
+
+    function showDashboard() {
+      postList.innerHTML = "";
+
+      // Pick out only this blogger's posts
+      const myPosts = [];
+      for (let i = 0; i < allPosts.length; i++) {
+        if (allPosts[i].author === currentUser.email) {
+          myPosts.push(allPosts[i]);
+        }
+      }
+
+      // Count the totals
+      let totalLikes = 0;
+      let totalComments = 0;
+      for (let i = 0; i < myPosts.length; i++) {
+        totalLikes = totalLikes + myPosts[i].likes.length;
+        totalComments = totalComments + myPosts[i].comments.length;
+      }
+
+      statPosts.textContent = myPosts.length;
+      statLikes.textContent = totalLikes;
+      statComments.textContent = totalComments;
+
+      if (myPosts.length === 0) {
+        emptyMessage.hidden = false;
+        return;
+      }
+      emptyMessage.hidden = true;
+
+      for (let i = 0; i < myPosts.length; i++) {
+        const post = myPosts[i];
+
+        const card = document.createElement("article");
+
+        const image = document.createElement("img");
+        image.src = post.img;
+        image.alt = post.title;
+
+        const body = document.createElement("div");
+        body.className = "cardBody";
+
+        const title = document.createElement("h2");
+        const titleLink = document.createElement("a");
+        titleLink.href = "comments.html?id=" + post.id;
+        titleLink.textContent = post.title;
+        title.appendChild(titleLink);
+
+        const name = document.createElement("p");
+        name.className = "authorName";
+        name.textContent = post.name + " - " + post.date;
+
+        let previewText = post.text;
+        if (previewText.length > 160) {
+          previewText = previewText.slice(0, 160) + "...";
+        }
+        const preview = document.createElement("p");
+        preview.textContent = previewText;
+        
+        const readMore = document.createElement("a");
+        readMore.className = "readMore";
+        readMore.href = "comments.html?id=" + post.id;
+        readMore.textContent = "Read the full post";
+
+        body.appendChild(title);
+        body.appendChild(name);
+        body.appendChild(preview);
+        body.appendChild(readMore);
+
+        // Like count, Comment link, Share, Delete
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const likeCount = document.createElement("button");
+        likeCount.textContent = "Likes (" + post.likes.length + ")";
+
+        const commentLink = document.createElement("a");
+        commentLink.href = "comments.html?id=" + post.id;
+        commentLink.textContent = "Comments (" + post.comments.length + ")";
+
+        const shareButton = document.createElement("button");
+        shareButton.textContent = "Share";
+        shareButton.onclick = function () {
+          sharePost(post.id);
+        };
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = function () {
+          deletePost(post.id);
+        };
+
+        actions.appendChild(likeCount);
+        actions.appendChild(commentLink);
+        actions.appendChild(shareButton);
+        const editLink = document.createElement("a");
+        editLink.href = "post.html?edit=" + post.id;
+        editLink.textContent = "Edit";
+        actions.appendChild(editLink);
+        actions.appendChild(deleteButton);
+
+        card.appendChild(image);
+        card.appendChild(body);
+        card.appendChild(actions);
+        postList.appendChild(card);
+      }
+    }
+
+    // Start the page
+    if (currentUser === null) {
+      loginNotice.hidden = false;
+    } else {
+      dashboardArea.hidden = false;
+      welcomeText.textContent = "Welcome, " + currentUser.name + ".";
+      showDashboard();
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign up | VenoX Tech</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html">VenoX Tech</a>
+    <a href="index.html">Home</a>
+  </header>
+
+  <main>
+    <h1>Create an account</h1>
+    <p>Join VenoX Tech to write posts, like and comment.</p>
+
+    <form id="signupForm">
+      <label for="nameInput">Name</label>
+      <input type="text" id="nameInput">
+      <p class="error" id="nameError"></p>
+
+      <label for="emailInput">Email</label>
+      <input type="email" id="emailInput">
+      <p class="error" id="emailError"></p>
+
+      <label for="passwordInput">Password</label>
+      <input type="password" id="passwordInput">
+      <p class="error" id="passwordError"></p>
+
+      <label for="confirmInput">Confirm password</label>
+      <input type="password" id="confirmInput">
+      <p class="error" id="confirmError"></p>
+
+      <button type="submit">Sign up</button>
+      <p class="error" id="formError"></p>
+    </form>
+
+    <p>Already have an account? <a href="login.html">Log in</a></p>
+  </main>
+
+  <script>
+    const signupForm = document.getElementById("signupForm");
+    const nameInput = document.getElementById("nameInput");
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const confirmInput = document.getElementById("confirmInput");
+
+    const nameError = document.getElementById("nameError");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
+    const confirmError = document.getElementById("confirmError");
+    const formError = document.getElementById("formError");
+
+    signupForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      nameError.textContent = "";
+      emailError.textContent = "";
+      passwordError.textContent = "";
+      confirmError.textContent = "";
+      formError.textContent = "";
+
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim().toLowerCase();
+      const password = passwordInput.value;
+      const confirmPassword = confirmInput.value;
+
+      let allGood = true;
+
+      if (name === "") {
+        nameError.textContent = "Enter your name.";
+        allGood = false;
+      }
+      if (email.includes("@") === false) {
+        emailError.textContent = "Enter a real email, like name@example.com.";
+        allGood = false;
+      }
+      if (password.length < 6) {
+        passwordError.textContent = "Use at least 6 characters.";
+        allGood = false;
+      }
+      if (confirmPassword !== password) {
+        confirmError.textContent = "The two passwords do not match.";
+        allGood = false;
+      }
+
+      if (allGood === false) {
+        return;
+      }
+
+      // Stop two accounts from using the same email
+      const users = JSON.parse(localStorage.getItem("vx_users")) || [];
+
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].email === email) {
+          emailError.textContent = "This email already has an account. Log in instead.";
+          return;
+        }
+      }
+
+      // Save the new account and log the person in
+      users.push({ name: name, email: email, password: password });
+      localStorage.setItem("vx_users", JSON.stringify(users));
+      localStorage.setItem("vx_session", JSON.stringify(email));
+
+      window.location.href = "blogger-dashboard.html";
+    });
+  </script>
+
+</body>
+</html>

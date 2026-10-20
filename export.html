@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Export posts | VenoX Tech</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html">VenoX Tech</a>
+    <a href="blogger-dashboard.html">Back to dashboard</a>
+  </header>
+
+  <main>
+    <h1>Export posts</h1>
+    <p id="countText">If you can read this line, the page code did not run.</p>
+    <p>Press the button, open <strong>posts.js</strong>, delete everything inside it, paste, and save.</p>
+
+    <button id="copyButton">Copy text for posts.js</button>
+    <p id="copyMessage"></p>
+
+    <textarea id="exportBox" hidden></textarea>
+  </main>
+
+  <script src="posts.js"></script>
+  <script src="storage.js"></script>
+  <script>
+    const countText = document.getElementById("countText");
+    const copyButton = document.getElementById("copyButton");
+    const copyMessage = document.getElementById("copyMessage");
+    const exportBox = document.getElementById("exportBox");
+
+    const allPosts = getAllPosts();
+    countText.textContent = "This browser has " + allPosts.length + " post(s) ready to export.";
+
+    // This is exactly what posts.js should contain
+    const exportText = "const starterPosts = " + JSON.stringify(allPosts, null, 2) + ";";
+
+    copyButton.addEventListener("click", function () {
+      exportBox.hidden = false;
+      exportBox.value = exportText;
+      exportBox.select();
+      document.execCommand("copy");
+      copyMessage.textContent = "Copied. Now paste it into posts.js.";
+    });
+  </script>
+
+</body>
+</html>
