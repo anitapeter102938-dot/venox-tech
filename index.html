@@ -9,13 +9,15 @@
 <body>
 
   <header>
-    <a href="index.html">VenoX Tech</a>
+    <a href="index.html"><img src="logo.png" alt="VenoX Tech logo"><span>VenoX Tech</span></a>
     <a href="login.html" id="makePostLink">Make a post</a>
   </header>
 
   <main>
     <h1>Tech, told by people who build it.</h1>
     <p id="intro">Read the latest posts from our bloggers. Log in to like and comment.</p>
+
+    <div id="filterButtons"></div>
 
     <div id="postList"></div>
     <p id="emptyMessage">No posts yet. Check back soon.</p>
@@ -25,11 +27,15 @@
   <script src="storage.js"></script>
   <script>
     const makePostLink = document.getElementById("makePostLink");
+    const filterButtons = document.getElementById("filterButtons");
     const postList = document.getElementById("postList");
     const emptyMessage = document.getElementById("emptyMessage");
 
     // Get all the posts: the starter posts from posts.js plus the ones saved in this browser
     const posts = getAllPosts();
+
+    // This changes when someone presses a filter button
+    let selectedCategory = "All";
 
     // Find out who is logged in
     let currentUser = null;
@@ -45,6 +51,33 @@
     // If logged in, "Make a post" goes straight to the dashboard
     if (currentUser !== null) {
       makePostLink.href = "blogger-dashboard.html";
+    }
+
+    // Show the filter buttons: All, JavaScript, CSS, ...
+    function showFilterButtons() {
+      filterButtons.innerHTML = "";
+
+      const allChoices = ["All"].concat(categories);
+
+      for (let i = 0; i < allChoices.length; i++) {
+        const choice = allChoices[i];
+
+        const filterButton = document.createElement("button");
+        filterButton.textContent = choice;
+        filterButton.className = "filterButton";
+
+        if (choice === selectedCategory) {
+          filterButton.className = "filterButton activeFilter";
+        }
+
+        filterButton.onclick = function () {
+          selectedCategory = choice;
+          showFilterButtons();
+          showPosts();
+        };
+
+        filterButtons.appendChild(filterButton);
+      }
     }
 
     function likePost(postId) {
@@ -78,15 +111,24 @@
     function showPosts() {
       postList.innerHTML = "";
 
-      if (posts.length === 0) {
-        emptyMessage.style.display = "block";
-        return;
-      }
-      emptyMessage.style.display = "none";
+      let shownCount = 0;
 
       // The newest post is first in the list, so we show them in order
       for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
+
+        // Old posts have no category, so we call them Other
+        let postCategory = "Other";
+        if (post.category) {
+          postCategory = post.category;
+        }
+
+        // Skip posts that do not match the chosen filter
+        if (selectedCategory !== "All" && postCategory !== selectedCategory) {
+          continue;
+        }
+
+        shownCount = shownCount + 1;
 
         const card = document.createElement("article");
 
@@ -96,6 +138,10 @@
 
         const body = document.createElement("div");
         body.className = "cardBody";
+
+        const categoryTag = document.createElement("p");
+        categoryTag.className = "categoryTag";
+        categoryTag.textContent = postCategory;
 
         const title = document.createElement("h2");
         const titleLink = document.createElement("a");
@@ -107,7 +153,7 @@
         name.className = "authorName";
         name.textContent = post.name;
 
-        let previewText = post.text;
+        let previewText = post.text.split("```").join("");
         if (previewText.length > 160) {
           previewText = previewText.slice(0, 160) + "...";
         }
@@ -119,6 +165,7 @@
         readMore.href = "comments.html?id=" + post.id;
         readMore.textContent = "Read the full post";
 
+        body.appendChild(categoryTag);
         body.appendChild(title);
         body.appendChild(name);
         body.appendChild(preview);
@@ -158,8 +205,21 @@
         card.appendChild(actions);
         postList.appendChild(card);
       }
+
+      // Show a message when there is nothing to show
+      if (shownCount === 0) {
+        if (posts.length === 0) {
+          emptyMessage.textContent = "No posts yet. Check back soon.";
+        } else {
+          emptyMessage.textContent = "No posts in this category yet.";
+        }
+        emptyMessage.style.display = "block";
+      } else {
+        emptyMessage.style.display = "none";
+      }
     }
 
+    showFilterButtons();
     showPosts();
   </script>
 

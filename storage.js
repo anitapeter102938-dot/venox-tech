@@ -1,4 +1,5 @@
-// posts.js must be loaded before this file
+// The topics a blogger can choose for a post
+const categories = ["JavaScript", "CSS", "Git", "AI", "Other"];
 
 // Get every post: the posts saved in this browser plus the starter posts from posts.js
 function getAllPosts() {
@@ -51,6 +52,7 @@ function savePosts(allPosts) {
       title: post.title,
       text: post.text,
       img: imageToSave,
+      category: post.category,
       name: post.name,
       author: post.author,
       date: post.date,

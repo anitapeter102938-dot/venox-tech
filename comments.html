@@ -1,201 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Comments | VenoX_Tech</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Post | VenoX Tech</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-   <header>
-    <a href="index.html">VenoX_Tech</a>
-    <a href="index.html">Back to home</a>
-   </header> 
 
-   <main>
-    <p id="notFound"hidden>This post could not be found. <a href="index.html">Go back home</a></p>
-    
-    <article id="postArea">
-        <img id="postImage" alt="">
-        <h1 id="postTitle"></h1>
-        <p id="postName"></p>
-        <p id="postText"></p>
+  <header>
+    <a href="index.html"><img src="logo.png" alt="VenoX Tech logo"><span>VenoX Tech</span></a>
+    <a href="index.html">Home</a>
+  </header>
 
-        <div class="actions">
-            <button id="likeButton">Like</button>
-            <button id="shareButton">Share</button>
-        </div>
+  <main>
+    <p class="notice" id="notFound" hidden>This post could not be found. <a href="index.html">Go back home</a></p>
 
-        <p class="notice" id="loginMessage" hidden>
-            Only logged-in bloggers can like and comment.
-            <a href="login.html">Log in</a> or <a href="signup.html">Create an account</a> 
-        </p>
-    </article>
+    <div id="postArea">
+      <img id="postImage" alt="">
+      <h1 id="postTitle"></h1>
+      <p id="postName"></p>
+      <div id="postText"></div>
+
+      <div class="actions">
+        <button id="likeButton">Like (0)</button>
+        <button id="shareButton">Share</button>
+      </div>
+    </div>
+
+    <p class="notice" id="loginMessage" hidden><a href="login.html">Log in</a> to like and comment.</p>
 
     <section id="commentSection">
-        <h2>Comments (<span id="commentCount">0</span>)</h2>
+      <h2>Comments (<span id="commentCount">0</span>)</h2>
 
-        <form id="commentForm">
-            <label for="commentInput">Your comment</label>
-            <textarea id="commentInput"></textarea>
-            <p class="error" id="commentError"></p>
-            <button type="submit" id="commentButton">Post comment</button>
-        </form>
-        
-        <div id="commentList"></div>
+      <form id="commentForm">
+        <textarea id="commentInput"></textarea>
+        <p class="error" id="commentError"></p>
+        <button type="submit" id="commentButton">Post comment</button>
+      </form>
+
+      <div id="commentList"></div>
     </section>
-   </main>
+  </main>
 
-   
-<script>
+  <script src="posts.js"></script>
+  <script src="storage.js"></script>
+  <script>
+    // The things on the page
+    const notFound = document.getElementById("notFound");
+    const postArea = document.getElementById("postArea");
     const postImage = document.getElementById("postImage");
     const postTitle = document.getElementById("postTitle");
     const postName = document.getElementById("postName");
     const postText = document.getElementById("postText");
-    const postArea = document.getElementById("postArea");
-    const notFound = document.getElementById("notFound");
-
-    const commentForm = document.getElementById("commentForm");
-    const commentInput = document.getElementById("commentInput");
-    const commentList = document.getElementById("commentList");
-    const commentCount = document.getElementById("commentCount");
-    const commentError = document.getElementById("commentError");
-
     const likeButton = document.getElementById("likeButton");
     const shareButton = document.getElementById("shareButton");
     const loginMessage = document.getElementById("loginMessage");
+    const commentSection = document.getElementById("commentSection");
+    const commentCount = document.getElementById("commentCount");
+    const commentForm = document.getElementById("commentForm");
+    const commentInput = document.getElementById("commentInput");
+    const commentError = document.getElementById("commentError");
+    const commentButton = document.getElementById("commentButton");
+    const commentList = document.getElementById("commentList");
 
-    const params = new URLSearchParams(window.location.search);
-    const postId = params.get("id");
+    // These change later, so they use let
+    let currentPost = null;
+    let currentUser = null;
 
-    let posts = JSON.parse(localStorage.getItem("vx_posts")) || [];
-    let post = posts.find(function (item) {
-        return item.id === postId;
+    // Get all the posts
+    const allPosts = getAllPosts();
+
+    // Find the post that was opened (the link looks like comments.html?id=123)
+    const postId = new URLSearchParams(window.location.search).get("id");
+
+    for (let i = 0; i < allPosts.length; i++) {
+      if (String(allPosts[i].id) === postId) {
+        currentPost = allPosts[i];
+      }
+    }
+
+    // Find out who is logged in
+    const currentEmail = JSON.parse(localStorage.getItem("vx_session")) || "";
+    const users = JSON.parse(localStorage.getItem("vx_users")) || [];
+
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].email === currentEmail) {
+        currentUser = users[i];
+      }
+    }
+
+    // Show the post text. Normal words become paragraphs, and code between ``` becomes a code box.
+    function showPostText(fullText) {
+      postText.innerHTML = "";
+
+      // Cutting the text at every ``` gives pieces: words, code, words, code, ...
+      const pieces = fullText.split("```");
+
+      for (let i = 0; i < pieces.length; i++) {
+        const piece = pieces[i].trim();
+
+        if (piece === "") {
+          continue;
+        }
+
+        // Pieces number 1, 3, 5... are code. Pieces number 0, 2, 4... are normal words.
+        if (i % 2 === 1) {
+          const codeBox = document.createElement("div");
+          codeBox.className = "codeBox";
+
+          const copyCodeButton = document.createElement("button");
+          copyCodeButton.textContent = "Copy";
+          copyCodeButton.onclick = function () {
+            navigator.clipboard.writeText(piece);
+            copyCodeButton.textContent = "Copied";
+          };
+
+          const preBlock = document.createElement("pre");
+          const codeText = document.createElement("code");
+          codeText.textContent = piece;
+
+          preBlock.appendChild(codeText);
+          codeBox.appendChild(copyCodeButton);
+          codeBox.appendChild(preBlock);
+          postText.appendChild(codeBox);
+        } else {
+          const paragraph = document.createElement("p");
+          paragraph.textContent = piece;
+          postText.appendChild(paragraph);
+        }
+      }
+    }
+
+    // Show the Like button with the number of likes
+    function showLikes() {
+      let liked = false;
+      if (currentUser !== null && currentPost.likes.includes(currentUser.email)) {
+        liked = true;
+      }
+
+      if (liked) {
+        likeButton.textContent = "Liked (" + currentPost.likes.length + ")";
+      } else {
+        likeButton.textContent = "Like (" + currentPost.likes.length + ")";
+      }
+    }
+
+    // Show all the comments
+    function showComments() {
+      commentList.innerHTML = "";
+      commentCount.textContent = currentPost.comments.length;
+
+      if (currentPost.comments.length === 0) {
+        commentList.textContent = "No comments yet. Be the first to comment.";
+        return;
+      }
+
+      for (let i = 0; i < currentPost.comments.length; i++) {
+        const comment = currentPost.comments[i];
+
+        const box = document.createElement("div");
+        box.className = "comment";
+
+        const writer = document.createElement("strong");
+        writer.textContent = comment.name;
+
+        const words = document.createElement("p");
+        words.textContent = comment.text;
+
+        box.appendChild(writer);
+        box.appendChild(words);
+        commentList.appendChild(box);
+      }
+    }
+
+    // Fill the page
+    if (currentPost === null) {
+      postArea.hidden = true;
+      commentSection.hidden = true;
+      notFound.hidden = false;
+    } else {
+      postImage.src = currentPost.img;
+      postImage.alt = "Image for " + currentPost.title;
+      postTitle.textContent = currentPost.title;
+      postName.textContent = "By " + currentPost.name + " · " + currentPost.date;
+      showPostText(currentPost.text);
+
+      showLikes();
+      showComments();
+
+      // Visitors cannot comment
+      if (currentUser === null) {
+        commentInput.disabled = true;
+        commentButton.disabled = true;
+        commentInput.placeholder = "Log in to write a comment";
+        loginMessage.hidden = false;
+      }
+    }
+
+    // When someone presses Like
+    likeButton.addEventListener("click", function () {
+      if (currentUser === null) {
+        loginMessage.hidden = false;
+        return;
+      }
+
+      const position = currentPost.likes.indexOf(currentUser.email);
+      if (position === -1) {
+        currentPost.likes.push(currentUser.email);
+      } else {
+        currentPost.likes.splice(position, 1);
+      }
+
+      savePosts(allPosts);
+      showLikes();
     });
 
-    const currentEmail =
-        JSON.parse(localStorage.getItem("vx_session")) || "";
-
-    if (!post) {
-        postArea.hidden = true;
-        document.getElementById("commentSection").hidden = true;
-        notFound.hidden = false;
-    } else {
-        postImage.src = post.img;
-        postImage.alt = post.title;
-        postTitle.textContent = post.title;
-        postName.textContent = post.name + " - " + post.date;
-        postText.textContent = post.text;
-
-        post.likes = post.likes || [];
-        post.comments = post.comments || [];
-
-        function updateComments() {
-            commentList.innerHTML = "";
-            commentCount.textContent = post.comments.length;
-
-            for (let i = 0; i < post.comments.length; i++) {
-                const comment = document.createElement("p");
-                comment.textContent =
-                    post.comments[i].name + ": " +
-                    post.comments[i].text;
-                commentList.appendChild(comment);
-            }
-        }
-
-        function savePosts() {
-            localStorage.setItem("vx_posts", JSON.stringify(posts));
-        }
-
-        commentForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            commentError.textContent = "";
-
-            const text = commentInput.value.trim();
-
-            if (!currentEmail) {
-                commentError.textContent =
-                    "Please log in before commenting.";
-                return;
-            }
-
-            if (text === "") {
-                commentError.textContent =
-                    "Please write a comment first.";
-                return;
-            }
-
-            const users =
-                JSON.parse(localStorage.getItem("vx_users")) || [];
-
-            const user = users.find(function (item) {
-                return item.email === currentEmail;
-            });
-
-            if (!user) {
-                commentError.textContent =
-                    "Please log in again before commenting.";
-                return;
-            }
-
-            post.comments.push({
-                name: user.name,
-                text: text
-            });
-
-            savePosts();
-            commentInput.value = "";
-            updateComments();
+    // When someone presses Share
+    shareButton.addEventListener("click", function () {
+      navigator.clipboard.writeText(window.location.href)
+        .then(function () {
+          shareButton.textContent = "Link copied";
+        })
+        .catch(function () {
+          shareButton.textContent = "Copy failed";
         });
+    });
 
-        likeButton.addEventListener("click", function () {
-            if (!currentEmail) {
-                alert("Please log in before liking this post.");
-                return;
-            }
+    // When someone posts a comment
+    commentForm.addEventListener("submit", function (event) {
+      event.preventDefault();
 
-            if (post.likes.includes(currentEmail)) {
-                post.likes = post.likes.filter(function (email) {
-                    return email !== currentEmail;
-                });
-                likeButton.textContent = "Like";
-            } else {
-                post.likes.push(currentEmail);
-                likeButton.textContent = "Unlike";
-            }
+      const text = commentInput.value.trim();
+      if (text === "") {
+        commentError.textContent = "Write a comment before you post.";
+        return;
+      }
 
-            savePosts();
-        });
+      currentPost.comments.unshift({
+        name: currentUser.name,
+        text: text,
+        date: new Date().toDateString()
+      });
 
-        shareButton.addEventListener("click", function () {
-            const link = window.location.href;
-
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(link)
-                    .then(function () {
-                        alert("Post link copied!");
-                    })
-                    .catch(function () {
-                        prompt("Copy this post link:", link);
-                    });
-            } else {
-                prompt("Copy this post link:", link);
-            }
-        });
-
-        updateComments();
-
-        if (!currentEmail) {
-            loginMessage.hidden = false;
-        } else {
-            loginMessage.hidden = true;
-        }
-
-        if (post.likes.includes(currentEmail) && currentEmail) {
-            likeButton.textContent = "Unlike";
-        }
-    }
-</script>
+      savePosts(allPosts);
+      commentInput.value = "";
+      commentError.textContent = "";
+      showComments();
+    });
+  </script>
 
 </body>
 </html>

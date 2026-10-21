@@ -1,11 +1,16 @@
-/* VenoX Tech styles: dark with venom green */
+/* VenoX Tech styles: bright lavender with purple and lime */
 
 body {
   margin: 0;
-  background-color: #0d0b14;
-  color: #e9e6f2;
+  background-color: #f5f1ff;
+  color: #1c1033;
   font-family: -apple-system, "Segoe UI", Arial, sans-serif;
   line-height: 1.6;
+}
+
+/* Make the hidden attribute always work */
+[hidden] {
+  display: none !important;
 }
 
 /* Top bar */
@@ -14,8 +19,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 18px 24px;
-  border-bottom: 1px solid #25213a;
-  border-top: 3px solid #c6f432;
+  background-color: #2b1565;
 }
 
 header a {
@@ -30,18 +34,18 @@ header a:first-child {
   font-weight: bold;
 }
 
-/* Make a post link */
+/* Link on the right */
 header a:last-child {
   padding: 8px 18px;
-  border: 1px solid #c6f432;
+  background-color: #c6f432;
   border-radius: 999px;
-  color: #c6f432;
+  color: #1c1033;
   font-size: 14px;
+  font-weight: bold;
 }
 
 header a:last-child:hover {
-  background-color: #c6f432;
-  color: #0d0b14;
+  background-color: white;
 }
 
 /* Reading column */
@@ -56,20 +60,25 @@ h1 {
   font-family: Georgia, serif;
   font-size: 46px;
   line-height: 1.15;
-  color: white;
+  color: #1c1033;
 }
 
 h2 {
   margin: 0 0 6px;
   font-family: Georgia, serif;
   font-size: 26px;
-  color: white;
+  color: #1c1033;
 }
 
 #intro {
   margin: 0 0 40px;
   font-size: 18px;
-  color: #a39fba;
+  color: #6b6485;
+}
+
+/* Links inside page text */
+main p a {
+  color: #6d28d9;
 }
 
 /* Forms */
@@ -78,27 +87,29 @@ label {
   margin-top: 28px;
   font-size: 14px;
   font-weight: bold;
-  color: #a39fba;
+  color: #4a4066;
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   box-sizing: border-box;
   margin-top: 8px;
   padding: 12px 14px;
-  background-color: #17142a;
-  color: #e9e6f2;
-  border: 1px solid #2e2950;
+  background-color: white;
+  color: #1c1033;
+  border: 1px solid #cfc4ee;
   border-radius: 8px;
   font-family: inherit;
   font-size: 16px;
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   outline: none;
-  border-color: #c6f432;
+  border-color: #6d28d9;
 }
 
 textarea {
@@ -118,15 +129,22 @@ input[type="file"] {
   min-height: 1em;
   margin: 6px 0 0;
   font-size: 14px;
-  color: #ff6b81;
+  color: #c0143c;
+}
+
+/* A small tip under the text box */
+.hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #8b84a6;
 }
 
 /* Buttons */
 button {
   margin-top: 28px;
   padding: 11px 26px;
-  background-color: #c6f432;
-  color: #0d0b14;
+  background-color: #6d28d9;
+  color: white;
   border: none;
   border-radius: 999px;
   font-size: 15px;
@@ -135,12 +153,12 @@ button {
 }
 
 button:hover {
-  background-color: #dcff63;
+  background-color: #5b21b6;
 }
 
 button:disabled {
-  background-color: #2e2950;
-  color: #77729a;
+  background-color: #d9d2ee;
+  color: #8b84a6;
   cursor: not-allowed;
 }
 
@@ -152,17 +170,47 @@ img {
   border-radius: 10px;
 }
 
+/* Filter buttons on the home page */
+#filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 32px;
+}
+
+.filterButton {
+  margin-top: 0;
+  padding: 8px 18px;
+  background-color: white;
+  color: #6b6485;
+  border: 1px solid #cfc4ee;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.filterButton:hover {
+  background-color: #ece4ff;
+}
+
+.filterButton.activeFilter {
+  background-color: #6d28d9;
+  color: white;
+  border-color: #6d28d9;
+  font-weight: bold;
+}
+
 /* Post cards on the home page and dashboard */
 article {
   margin-bottom: 32px;
-  background-color: #151225;
-  border: 1px solid #25213a;
+  background-color: white;
+  border: 1px solid #e3dbf7;
   border-radius: 16px;
   overflow: hidden;
 }
 
 article:hover {
-  border-color: #c6f432;
+  border-color: #6d28d9;
+  box-shadow: 0 12px 30px rgba(109, 40, 217, 0.15);
   transform: translateY(-3px);
   transition: all 0.2s;
 }
@@ -180,27 +228,105 @@ article img {
 
 .cardBody p {
   margin: 0 0 12px;
-  color: #bdb9d3;
+  color: #4a4066;
 }
 
-.authorName {
+/* The topic word on each card */
+.cardBody .categoryTag {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 3px 12px;
+  background-color: #c6f432;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #1c1033;
+}
+
+.cardBody .authorName {
   font-size: 14px;
-  color: #c6f432;
+  font-weight: bold;
+  color: #6d28d9;
+}
+
+.cardBody h2 a {
+  color: #1c1033;
+  text-decoration: none;
+}
+
+.cardBody h2 a:hover {
+  color: #6d28d9;
+}
+
+.readMore {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #6d28d9;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 /* The post on comments.html */
 #postName {
   margin: 0 0 8px;
   font-size: 15px;
-  color: #c6f432;
+  font-weight: bold;
+  color: #6d28d9;
 }
 
 #postText {
   font-family: Georgia, serif;
   font-size: 20px;
   line-height: 1.8;
-  color: #d6d3e6;
+  color: #2b2340;
   white-space: pre-wrap;
+}
+
+#postText p {
+  margin: 0 0 20px;
+}
+
+/* Code blocks inside posts */
+.codeBox {
+  position: relative;
+  margin: 24px 0;
+  background-color: #1c1033;
+  border-radius: 10px;
+}
+
+.codeBox pre {
+  margin: 0;
+  padding: 48px 20px 20px;
+  overflow-x: auto;
+}
+
+.codeBox code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #c6f432;
+}
+
+.codeBox button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin: 0;
+  padding: 5px 14px;
+  background-color: transparent;
+  color: #cfc4ee;
+  border: 1px solid #4a3a82;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.codeBox button:hover {
+  background-color: #c6f432;
+  color: #1c1033;
+  border-color: #c6f432;
 }
 
 /* Like, Comment, Share row */
@@ -209,7 +335,7 @@ article img {
   gap: 8px;
   margin: 24px 0 16px;
   padding: 10px 0;
-  border-top: 1px solid #25213a;
+  border-top: 1px solid #ddd5f5;
 }
 
 article .actions {
@@ -222,8 +348,8 @@ article .actions {
   margin-top: 0;
   padding: 8px 16px;
   background-color: transparent;
-  color: #a39fba;
-  border: 1px solid #2e2950;
+  color: #6b6485;
+  border: 1px solid #cfc4ee;
   border-radius: 999px;
   font-size: 14px;
   font-weight: normal;
@@ -232,21 +358,21 @@ article .actions {
 
 .actions button:hover,
 .actions a:hover {
-  background-color: #c6f432;
-  color: #0d0b14;
-  border-color: #c6f432;
+  background-color: #6d28d9;
+  color: white;
+  border-color: #6d28d9;
 }
 
 .notice {
   padding: 12px 16px;
-  background-color: #1d1838;
-  border-left: 3px solid #c6f432;
+  background-color: #ece4ff;
+  border-left: 3px solid #6d28d9;
   border-radius: 6px;
   font-size: 15px;
 }
 
 .notice a {
-  color: #c6f432;
+  color: #6d28d9;
 }
 
 /* Comments */
@@ -258,12 +384,13 @@ article .actions {
 
 .comment {
   padding: 20px 0;
-  border-bottom: 1px solid #25213a;
+  border-bottom: 1px solid #ddd5f5;
 }
 
 .comment p {
   margin: 6px 0 0;
 }
+
 /* Dashboard */
 .buttonRow {
   display: flex;
@@ -274,8 +401,8 @@ article .actions {
 
 .buttonRow a {
   padding: 11px 26px;
-  background-color: #c6f432;
-  color: #0d0b14;
+  background-color: #6d28d9;
+  color: white;
   border-radius: 999px;
   font-size: 15px;
   font-weight: bold;
@@ -283,19 +410,19 @@ article .actions {
 }
 
 .buttonRow a:hover {
-  background-color: #dcff63;
+  background-color: #5b21b6;
 }
 
 .buttonRow button {
   margin-top: 0;
   background-color: transparent;
-  color: #a39fba;
-  border: 1px solid #2e2950;
+  color: #6b6485;
+  border: 1px solid #cfc4ee;
   font-weight: normal;
 }
 
 .buttonRow button:hover {
-  background-color: #25213a;
+  background-color: #ece4ff;
 }
 
 #stats {
@@ -307,8 +434,8 @@ article .actions {
 #stats div {
   flex: 1;
   padding: 16px;
-  background-color: #151225;
-  border: 1px solid #25213a;
+  background-color: white;
+  border: 1px solid #e3dbf7;
   border-radius: 12px;
   text-align: center;
 }
@@ -317,36 +444,41 @@ article .actions {
   display: block;
   font-family: Georgia, serif;
   font-size: 32px;
-  color: #c6f432;
+  color: #6d28d9;
 }
 
 #stats span {
   font-size: 13px;
-  color: #a39fba;
+  color: #6b6485;
 }
 
-main p a {
-  color: #c6f432;
+/* Phones */
+@media (max-width: 520px) {
+  h1 {
+    font-size: 34px;
+  }
+
+  main {
+    padding-top: 32px;
+  }
+
+  .buttonRow {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
 }
 
-[hidden] {
-  display: none !important;
+/* Logo in the top bar */
+header a:first-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* Links to the full post */
-.cardBody h2 a {
-  color: white;
-  text-decoration: none;
-}
-
-.cardBody h2 a:hover {
-  color: #c6f432;
-}
-
-.readMore {
-  display: inline-block;
-  margin-bottom: 16px;
-  color: #c6f432;
-  font-size: 14px;
-  text-decoration: none;
+header img {
+  width: 38px;
+  height: 38px;
+  margin: 0;
+  border-radius: 8px;
+  object-fit: contain;
 }
