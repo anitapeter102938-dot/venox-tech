@@ -28,7 +28,11 @@
 
       <div class="buttonRow">
       <a href="post.html">Make a post</a>
-      <a href="export.html">Export posts</a>
+
+      <div id="adminExport" hidden>
+        <a href="export.html">Export posts</a>
+      </div>
+
       <button id="logoutButton">Log out</button>
     </div>
 
@@ -47,6 +51,8 @@
     const logoutButton = document.getElementById("logoutButton");
     const postList = document.getElementById("postList");
     const emptyMessage = document.getElementById("emptyMessage");
+    const adminExport = document.getElementById("adminExport");
+    const adminEmail = "YOUR_ADMIN_EMAIL";
 
     // Find out who is logged in
     let currentUser = null;
@@ -205,10 +211,15 @@
     if (currentUser === null) {
       loginNotice.hidden = false;
     } else {
-      dashboardArea.hidden = false;
-      welcomeText.textContent = "Welcome, " + currentUser.name + ".";
-      showDashboard();
-    }
+  dashboardArea.hidden = false;
+  welcomeText.textContent = "Welcome, " + currentUser.name + ".";
+
+  if (currentUser.email === adminEmail) {
+    adminExport.hidden = false;
+  }
+
+  showDashboard();
+  }
   </script>
 
 </body>
