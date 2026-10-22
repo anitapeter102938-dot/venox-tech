@@ -482,3 +482,31 @@ header img {
   border-radius: 8px;
   object-fit: contain;
 }
+
+/* Footer */
+footer {
+  padding: 32px 20px 48px;
+  text-align: center;
+  border-top: 1px solid #ddd5f5;
+  font-size: 14px;
+  color: #6b6485;
+}
+
+footer p {
+  margin: 0 0 8px;
+}
+
+footer a {
+  color: #6d28d9;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Lists on the About page */
+main li {
+  margin-bottom: 8px;
+}
