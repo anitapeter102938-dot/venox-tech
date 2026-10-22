@@ -510,3 +510,55 @@ footer a:hover {
 main li {
   margin-bottom: 8px;
 }
+
+/* Smooth jump when pressing a link inside the page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reading progress bar */
+#progressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 4px;
+  background-color: #c6f432;
+  z-index: 10;
+}
+
+/* Table of contents */
+#tableOfContents {
+  margin: 24px 0 32px;
+  padding: 20px 24px;
+  background-color: white;
+  border: 1px solid #e3dbf7;
+  border-left: 4px solid #c6f432;
+  border-radius: 10px;
+}
+
+#tableOfContents h3 {
+  margin: 0 0 10px;
+  font-family: Georgia, serif;
+  font-size: 18px;
+  color: #1c1033;
+}
+
+#tocList {
+  margin: 0;
+  padding-left: 20px;
+}
+
+#tocList a {
+  color: #6d28d9;
+  text-decoration: none;
+}
+
+#tocList a:hover {
+  text-decoration: underline;
+}
+
+/* Section headings inside a post */
+#postText h2 {
+  margin: 40px 0 12px;
+}

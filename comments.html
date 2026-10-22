@@ -8,6 +8,8 @@
 </head>
 <body>
 
+  <div id="progressBar"></div>
+
   <header>
     <a href="index.html"><img src="logo.png" alt="VenoX Tech logo"><span>VenoX Tech</span></a>
     <a href="index.html">Home</a>
@@ -20,6 +22,12 @@
       <img id="postImage" alt="">
       <h1 id="postTitle"></h1>
       <p id="postName"></p>
+
+      <nav id="tableOfContents" hidden>
+        <h3>In this post</h3>
+        <ul id="tocList"></ul>
+      </nav>
+
       <div id="postText"></div>
 
       <div class="actions">
@@ -41,17 +49,25 @@
 
       <div id="commentList"></div>
     </section>
-  </main><footer><p>VenoX Tech: Tech, told by people who build it.</p><p><a href="index.html">Home</a> · <a href="about.html">About</a></p></footer>
+  </main>
+
+  <footer>
+    <p>VenoX Tech: Tech, told by people who build it.</p>
+    <p><a href="index.html">Home</a> · <a href="about.html">About</a></p>
+  </footer>
 
   <script src="posts.js"></script>
   <script src="storage.js"></script>
   <script>
     // The things on the page
+    const progressBar = document.getElementById("progressBar");
     const notFound = document.getElementById("notFound");
     const postArea = document.getElementById("postArea");
     const postImage = document.getElementById("postImage");
     const postTitle = document.getElementById("postTitle");
     const postName = document.getElementById("postName");
+    const tableOfContents = document.getElementById("tableOfContents");
+    const tocList = document.getElementById("tocList");
     const postText = document.getElementById("postText");
     const likeButton = document.getElementById("likeButton");
     const shareButton = document.getElementById("shareButton");
@@ -90,9 +106,26 @@
       }
     }
 
-    // Show the post text. Normal words become paragraphs, and code between ``` becomes a code box.
+    // Fill the progress bar as the reader scrolls down
+    window.addEventListener("scroll", function () {
+      const scrolledDistance = window.scrollY;
+      const totalScrollable = document.documentElement.scrollHeight - window.innerHeight;
+
+      let percent = 0;
+      if (totalScrollable > 0) {
+        percent = (scrolledDistance / totalScrollable) * 100;
+      }
+
+      progressBar.style.width = percent + "%";
+    });
+
+    // Show the post text.
+    // Code between ``` becomes a code box. A line starting with ## becomes a section heading.
     function showPostText(fullText) {
       postText.innerHTML = "";
+      tocList.innerHTML = "";
+
+      let sectionCount = 0;
 
       // Cutting the text at every ``` gives pieces: words, code, words, code, ...
       const pieces = fullText.split("```");
@@ -125,10 +158,47 @@
           codeBox.appendChild(preBlock);
           postText.appendChild(codeBox);
         } else {
-          const paragraph = document.createElement("p");
-          paragraph.textContent = piece;
-          postText.appendChild(paragraph);
+          // Normal words: go through them one line at a time
+          const lines = piece.split("\n");
+
+          for (let j = 0; j < lines.length; j++) {
+            const line = lines[j].trim();
+
+            if (line === "") {
+              continue;
+            }
+
+            if (line.startsWith("## ")) {
+              // A section heading
+              sectionCount = sectionCount + 1;
+              const headingText = line.slice(3);
+              const sectionId = "section-" + sectionCount;
+
+              const heading = document.createElement("h2");
+              heading.id = sectionId;
+              heading.textContent = headingText;
+              postText.appendChild(heading);
+
+              // Add the heading to the table of contents
+              const tocItem = document.createElement("li");
+              const tocLink = document.createElement("a");
+              tocLink.href = "#" + sectionId;
+              tocLink.textContent = headingText;
+              tocItem.appendChild(tocLink);
+              tocList.appendChild(tocItem);
+            } else {
+              // A normal paragraph
+              const paragraph = document.createElement("p");
+              paragraph.textContent = line;
+              postText.appendChild(paragraph);
+            }
+          }
         }
+      }
+
+      // Show the table of contents only when the post has two or more sections
+      if (sectionCount >= 2) {
+        tableOfContents.hidden = false;
       }
     }
 
