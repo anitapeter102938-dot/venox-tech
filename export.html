@@ -35,7 +35,6 @@
     const allPosts = getAllPosts();
     countText.textContent = "This browser has " + allPosts.length + " post(s) ready to export.";
 
-    // This is exactly what posts.js should contain
     const exportText = "const starterPosts = " + JSON.stringify(allPosts, null, 2) + ";";
 
     copyButton.addEventListener("click", function () {

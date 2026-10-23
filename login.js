@@ -31,7 +31,6 @@ loginForm.addEventListener("submit", function (event) {
     return;
   }
 
-  // Look for an account with this email and password
   const users = JSON.parse(localStorage.getItem("vx_users")) || [];
   let foundUser = null;
 
@@ -46,7 +45,6 @@ loginForm.addEventListener("submit", function (event) {
     return;
   }
 
-  // Save who is logged in, then go to the dashboard
   localStorage.setItem("vx_session", JSON.stringify(foundUser.email));
   window.location.href = "blogger-dashboard.html";
 });

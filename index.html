@@ -31,13 +31,10 @@
     const postList = document.getElementById("postList");
     const emptyMessage = document.getElementById("emptyMessage");
 
-    // Get all the posts: the starter posts from posts.js plus the ones saved in this browser
     const posts = getAllPosts();
 
-    // This changes when someone presses a filter button
     let selectedCategory = "All";
 
-    // Find out who is logged in
     let currentUser = null;
     const currentEmail = JSON.parse(localStorage.getItem("vx_session")) || "";
     const users = JSON.parse(localStorage.getItem("vx_users")) || [];
@@ -48,12 +45,10 @@
       }
     }
 
-    // If logged in, "Make a post" goes straight to the dashboard
     if (currentUser !== null) {
       makePostLink.href = "blogger-dashboard.html";
     }
 
-    // Show the filter buttons: All, JavaScript, CSS, ...
     function showFilterButtons() {
       filterButtons.innerHTML = "";
 
@@ -113,17 +108,14 @@
 
       let shownCount = 0;
 
-      // The newest post is first in the list, so we show them in order
       for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
 
-        // Old posts have no category, so we call them Other
         let postCategory = "Other";
         if (post.category) {
           postCategory = post.category;
         }
 
-        // Skip posts that do not match the chosen filter
         if (selectedCategory !== "All" && postCategory !== selectedCategory) {
           continue;
         }
@@ -171,7 +163,6 @@
         body.appendChild(preview);
         body.appendChild(readMore);
 
-        // Like, Comment, Share
         const actions = document.createElement("div");
         actions.className = "actions";
 
@@ -206,7 +197,6 @@
         postList.appendChild(card);
       }
 
-      // Show a message when there is nothing to show
       if (shownCount === 0) {
         if (posts.length === 0) {
           emptyMessage.textContent = "No posts yet. Check back soon.";

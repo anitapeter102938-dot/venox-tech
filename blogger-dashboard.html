@@ -54,7 +54,6 @@
     const adminExport = document.getElementById("adminExport");
     const adminEmail = "anitapeter.102938@gmail.com";
 
-    // Find out who is logged in
     let currentUser = null;
     const currentEmail = JSON.parse(localStorage.getItem("vx_session")) || "";
     const users = JSON.parse(localStorage.getItem("vx_users")) || [];
@@ -65,10 +64,8 @@
       }
     }
 
-    // All posts from all bloggers
     let allPosts = JSON.parse(localStorage.getItem("vx_posts")) || [];
 
-    // Log out and go home
     logoutButton.addEventListener("click", function () {
       localStorage.removeItem("vx_session");
       window.location.href = "index.html";
@@ -80,7 +77,6 @@
         return;
       }
 
-      // Keep every post except the one we are deleting
       const remainingPosts = [];
       for (let i = 0; i < allPosts.length; i++) {
         if (allPosts[i].id !== postId) {
@@ -103,7 +99,6 @@
     function showDashboard() {
       postList.innerHTML = "";
 
-      // Pick out only this blogger's posts
       const myPosts = [];
       for (let i = 0; i < allPosts.length; i++) {
         if (allPosts[i].author === currentUser.email) {
@@ -111,7 +106,6 @@
         }
       }
 
-      // Count the totals
       let totalLikes = 0;
       let totalComments = 0;
       for (let i = 0; i < myPosts.length; i++) {
@@ -168,7 +162,6 @@
         body.appendChild(preview);
         body.appendChild(readMore);
 
-        // Like count, Comment link, Share, Delete
         const actions = document.createElement("div");
         actions.className = "actions";
 
@@ -207,7 +200,6 @@
       }
     }
 
-    // Start the page
     if (currentUser === null) {
       loginNotice.hidden = false;
     } else {

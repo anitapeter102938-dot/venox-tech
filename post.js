@@ -1,4 +1,3 @@
-// The things on the page
 const pageTitle = document.getElementById("pageTitle");
 const postForm = document.getElementById("postForm");
 const titleInput = document.getElementById("titleInput");
@@ -10,19 +9,16 @@ const nameInput = document.getElementById("nameInput");
 const loginMessage = document.getElementById("loginMessage");
 const publishButton = document.getElementById("publishButton");
 
-// The red messages
 const titleError = document.getElementById("titleError");
 const textError = document.getElementById("textError");
 const imageError = document.getElementById("imageError");
 const nameError = document.getElementById("nameError");
 const formError = document.getElementById("formError");
 
-// These change later, so they use let
 let imageData = "";
 let currentUser = null;
 let editingPost = null;
 
-// Fill the Category box with the choices from storage.js
 for (let i = 0; i < categories.length; i++) {
   const option = document.createElement("option");
   option.value = categories[i];
@@ -30,10 +26,8 @@ for (let i = 0; i < categories.length; i++) {
   categoryInput.appendChild(option);
 }
 
-// All the posts
 const allPosts = getAllPosts();
 
-// Find out who is logged in
 const currentEmail = JSON.parse(localStorage.getItem("vx_session")) || "";
 const users = JSON.parse(localStorage.getItem("vx_users")) || [];
 
@@ -43,7 +37,6 @@ for (let i = 0; i < users.length; i++) {
   }
 }
 
-// Is this an edit? The link looks like post.html?edit=123
 const editId = new URLSearchParams(window.location.search).get("edit");
 
 if (currentUser === null) {
@@ -52,7 +45,7 @@ if (currentUser === null) {
   nameInput.value = currentUser.name;
 
   if (editId !== null) {
-    // Find the post, and only let its owner edit it
+
     for (let i = 0; i < allPosts.length; i++) {
       if (String(allPosts[i].id) === editId && allPosts[i].author === currentUser.email) {
         editingPost = allPosts[i];
@@ -66,7 +59,6 @@ if (currentUser === null) {
   }
 }
 
-// If we are editing, fill the form with the old post
 if (editingPost !== null) {
   pageTitle.textContent = "Edit your post";
   publishButton.textContent = "Save changes";
@@ -83,7 +75,6 @@ if (editingPost !== null) {
   imagePreview.hidden = false;
 }
 
-// When the blogger chooses an image
 imageInput.addEventListener("change", function () {
   const file = imageInput.files[0];
   if (!file) {
@@ -105,7 +96,6 @@ imageInput.addEventListener("change", function () {
   reader.readAsDataURL(file);
 });
 
-// When the blogger presses the button
 postForm.addEventListener("submit", function (event) {
   event.preventDefault();
 
@@ -144,14 +134,14 @@ postForm.addEventListener("submit", function (event) {
   }
 
   if (editingPost !== null) {
-    // Change the old post. Its likes and comments stay.
+  
     editingPost.title = titleInput.value.trim();
     editingPost.text = textInput.value.trim();
     editingPost.name = nameInput.value.trim();
     editingPost.category = categoryInput.value;
     editingPost.img = imageData;
   } else {
-    // Make a new post and put it at the top of the list
+
     const newPost = {
       id: Date.now(),
       title: titleInput.value.trim(),

@@ -1,5 +1,3 @@
-/* VenoX Tech styles: bright lavender with purple and lime */
-
 body {
   margin: 0;
   background-color: #f5f1ff;
@@ -8,12 +6,10 @@ body {
   line-height: 1.6;
 }
 
-/* Make the hidden attribute always work */
 [hidden] {
   display: none !important;
 }
 
-/* Top bar */
 header {
   display: flex;
   justify-content: space-between;
@@ -26,7 +22,6 @@ header a {
   text-decoration: none;
 }
 
-/* Site name */
 header a:first-child {
   color: white;
   font-family: Georgia, serif;
@@ -34,7 +29,6 @@ header a:first-child {
   font-weight: bold;
 }
 
-/* Link on the right */
 header a:last-child {
   padding: 8px 18px;
   background-color: #c6f432;
@@ -48,7 +42,6 @@ header a:last-child:hover {
   background-color: white;
 }
 
-/* Reading column */
 main {
   max-width: 700px;
   margin: 0 auto;
@@ -76,12 +69,10 @@ h2 {
   color: #6b6485;
 }
 
-/* Links inside page text */
 main p a {
   color: #6d28d9;
 }
 
-/* Forms */
 label {
   display: block;
   margin-top: 28px;
@@ -132,14 +123,12 @@ input[type="file"] {
   color: #c0143c;
 }
 
-/* A small tip under the text box */
 .hint {
   margin: 6px 0 0;
   font-size: 13px;
   color: #8b84a6;
 }
 
-/* Buttons */
 button {
   margin-top: 28px;
   padding: 11px 26px;
@@ -162,7 +151,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Pictures */
 img {
   display: block;
   width: 100%;
@@ -170,7 +158,6 @@ img {
   border-radius: 10px;
 }
 
-/* Filter buttons on the home page */
 #filterButtons {
   display: flex;
   flex-wrap: wrap;
@@ -199,7 +186,6 @@ img {
   font-weight: bold;
 }
 
-/* Post cards on the home page and dashboard */
 article {
   margin-bottom: 32px;
   background-color: white;
@@ -231,7 +217,6 @@ article img {
   color: #4a4066;
 }
 
-/* The topic word on each card */
 .cardBody .categoryTag {
   display: inline-block;
   margin: 0 0 10px;
@@ -269,7 +254,6 @@ article img {
   text-decoration: none;
 }
 
-/* The post on comments.html */
 #postName {
   margin: 0 0 8px;
   font-size: 15px;
@@ -289,7 +273,6 @@ article img {
   margin: 0 0 20px;
 }
 
-/* Code blocks inside posts */
 .codeBox {
   position: relative;
   margin: 24px 0;
@@ -329,7 +312,6 @@ article img {
   border-color: #c6f432;
 }
 
-/* Like, Comment, Share row */
 .actions {
   display: flex;
   gap: 8px;
@@ -375,7 +357,6 @@ article .actions {
   color: #6d28d9;
 }
 
-/* Comments */
 #commentInput {
   height: 100px;
   font-family: inherit;
@@ -391,7 +372,6 @@ article .actions {
   margin: 6px 0 0;
 }
 
-/* Dashboard */
 .buttonRow {
   display: flex;
   justify-content: space-between;
@@ -452,7 +432,6 @@ article .actions {
   color: #6b6485;
 }
 
-/* Phones */
 @media (max-width: 520px) {
   h1 {
     font-size: 34px;
@@ -468,7 +447,6 @@ article .actions {
   }
 }
 
-/* Logo in the top bar */
 header a:first-child {
   display: flex;
   align-items: center;
@@ -483,7 +461,6 @@ header img {
   object-fit: contain;
 }
 
-/* Footer */
 footer {
   padding: 32px 20px 48px;
   text-align: center;
@@ -506,17 +483,14 @@ footer a:hover {
   text-decoration: underline;
 }
 
-/* Lists on the About page */
 main li {
   margin-bottom: 8px;
 }
 
-/* Smooth jump when pressing a link inside the page */
 html {
   scroll-behavior: smooth;
 }
 
-/* Reading progress bar */
 #progressBar {
   position: fixed;
   top: 0;
@@ -527,7 +501,6 @@ html {
   z-index: 10;
 }
 
-/* Table of contents */
 #tableOfContents {
   margin: 24px 0 32px;
   padding: 20px 24px;
@@ -558,7 +531,6 @@ html {
   text-decoration: underline;
 }
 
-/* Section headings inside a post */
 #postText h2 {
   margin: 40px 0 12px;
 }

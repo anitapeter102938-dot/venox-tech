@@ -91,7 +91,6 @@
         return;
       }
 
-      // Stop two accounts from using the same email
       const users = JSON.parse(localStorage.getItem("vx_users")) || [];
 
       for (let i = 0; i < users.length; i++) {
@@ -101,7 +100,6 @@
         }
       }
 
-      // Save the new account and log the person in
       users.push({ name: name, email: email, password: password });
       localStorage.setItem("vx_users", JSON.stringify(users));
       localStorage.setItem("vx_session", JSON.stringify(email));

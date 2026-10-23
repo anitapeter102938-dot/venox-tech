@@ -59,7 +59,7 @@
   <script src="posts.js"></script>
   <script src="storage.js"></script>
   <script>
-    // The things on the page
+
     const progressBar = document.getElementById("progressBar");
     const notFound = document.getElementById("notFound");
     const postArea = document.getElementById("postArea");
@@ -80,14 +80,11 @@
     const commentButton = document.getElementById("commentButton");
     const commentList = document.getElementById("commentList");
 
-    // These change later, so they use let
     let currentPost = null;
     let currentUser = null;
 
-    // Get all the posts
     const allPosts = getAllPosts();
 
-    // Find the post that was opened (the link looks like comments.html?id=123)
     const postId = new URLSearchParams(window.location.search).get("id");
 
     for (let i = 0; i < allPosts.length; i++) {
@@ -96,7 +93,6 @@
       }
     }
 
-    // Find out who is logged in
     const currentEmail = JSON.parse(localStorage.getItem("vx_session")) || "";
     const users = JSON.parse(localStorage.getItem("vx_users")) || [];
 
@@ -106,7 +102,6 @@
       }
     }
 
-    // Fill the progress bar as the reader scrolls down
     window.addEventListener("scroll", function () {
       const scrolledDistance = window.scrollY;
       const totalScrollable = document.documentElement.scrollHeight - window.innerHeight;
@@ -127,7 +122,6 @@
 
       let sectionCount = 0;
 
-      // Cutting the text at every ``` gives pieces: words, code, words, code, ...
       const pieces = fullText.split("```");
 
       for (let i = 0; i < pieces.length; i++) {
@@ -137,7 +131,6 @@
           continue;
         }
 
-        // Pieces number 1, 3, 5... are code. Pieces number 0, 2, 4... are normal words.
         if (i % 2 === 1) {
           const codeBox = document.createElement("div");
           codeBox.className = "codeBox";
@@ -158,7 +151,7 @@
           codeBox.appendChild(preBlock);
           postText.appendChild(codeBox);
         } else {
-          // Normal words: go through them one line at a time
+
           const lines = piece.split("\n");
 
           for (let j = 0; j < lines.length; j++) {
@@ -169,7 +162,7 @@
             }
 
             if (line.startsWith("## ")) {
-              // A section heading
+
               sectionCount = sectionCount + 1;
               const headingText = line.slice(3);
               const sectionId = "section-" + sectionCount;
@@ -179,7 +172,6 @@
               heading.textContent = headingText;
               postText.appendChild(heading);
 
-              // Add the heading to the table of contents
               const tocItem = document.createElement("li");
               const tocLink = document.createElement("a");
               tocLink.href = "#" + sectionId;
@@ -187,7 +179,7 @@
               tocItem.appendChild(tocLink);
               tocList.appendChild(tocItem);
             } else {
-              // A normal paragraph
+
               const paragraph = document.createElement("p");
               paragraph.textContent = line;
               postText.appendChild(paragraph);
@@ -196,13 +188,11 @@
         }
       }
 
-      // Show the table of contents only when the post has two or more sections
       if (sectionCount >= 2) {
         tableOfContents.hidden = false;
       }
     }
 
-    // Show the Like button with the number of likes
     function showLikes() {
       let liked = false;
       if (currentUser !== null && currentPost.likes.includes(currentUser.email)) {
@@ -216,7 +206,6 @@
       }
     }
 
-    // Show all the comments
     function showComments() {
       commentList.innerHTML = "";
       commentCount.textContent = currentPost.comments.length;
@@ -244,7 +233,6 @@
       }
     }
 
-    // Fill the page
     if (currentPost === null) {
       postArea.hidden = true;
       commentSection.hidden = true;
@@ -259,7 +247,6 @@
       showLikes();
       showComments();
 
-      // Visitors cannot comment
       if (currentUser === null) {
         commentInput.disabled = true;
         commentButton.disabled = true;
@@ -268,7 +255,6 @@
       }
     }
 
-    // When someone presses Like
     likeButton.addEventListener("click", function () {
       if (currentUser === null) {
         loginMessage.hidden = false;
@@ -286,7 +272,6 @@
       showLikes();
     });
 
-    // When someone presses Share
     shareButton.addEventListener("click", function () {
       navigator.clipboard.writeText(window.location.href)
         .then(function () {
@@ -297,7 +282,6 @@
         });
     });
 
-    // When someone posts a comment
     commentForm.addEventListener("submit", function (event) {
       event.preventDefault();
 
